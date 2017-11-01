@@ -17,7 +17,7 @@ import com.cefisi.frank.business.entities.Vat.VatBuilder;
 /**
  * Class test over {@code Vat} class.
  */
-public class VatTest extends DaoBaseTest {
+public class VatDaoTest extends DaoBaseTest {
 
     private final EntityDao dao = new EntityDao(EMF);
 
