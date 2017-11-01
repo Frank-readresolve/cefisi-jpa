@@ -25,7 +25,7 @@ public class VatDaoTest extends DaoBaseTest {
      * Verifies that a new {@code Vat} instance is persisted.
      */
     @Test
-    public void shouldPersistVat() {
+    public void shouldPersist() {
 	BigDecimal rate = BigDecimal.valueOf(20.0);
 	LocalDate start = LocalDate.now();
 	Vat vat = new VatBuilder().setRate(rate).setStart(start).build();
@@ -37,7 +37,7 @@ public class VatDaoTest extends DaoBaseTest {
      * Verifies that an existing persisted {@code Vat} cannot be persisted.
      */
     @Test(expected = PersistenceException.class)
-    public void shouldNotPersistVat() {
+    public void shouldNotPersist() {
 	Vat vat = dao.find(Vat.class, 1);
 	dao.persist(vat);
     }
@@ -46,7 +46,7 @@ public class VatDaoTest extends DaoBaseTest {
      * Verifies that the end date of a persisted {@code Vat} is updated.
      */
     @Test
-    public void shouldUpdateVat() {
+    public void shouldUpdate() {
 	Vat vat = dao.find(Vat.class, 3);
 	vat.setEnd(LocalDate.now());
 	dao.update(vat);
@@ -58,7 +58,7 @@ public class VatDaoTest extends DaoBaseTest {
      * Verifies that the end date of a persisted {@code Vat} is updated.
      */
     @Test
-    public void shouldRemoveVat() {
+    public void shouldRemove() {
 	Vat vat = dao.find(Vat.class, 4);
 	assertNotNull(vat);
 	dao.remove(vat);
