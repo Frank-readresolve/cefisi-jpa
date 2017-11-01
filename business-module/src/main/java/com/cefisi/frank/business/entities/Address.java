@@ -1,15 +1,10 @@
 package com.cefisi.frank.business.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
 /**
  * Represents an address.
  */
-@Entity
 public class Address {
 
-    @Id
     private int id;
 
     private String name;
