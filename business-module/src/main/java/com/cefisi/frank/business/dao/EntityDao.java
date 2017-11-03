@@ -1,5 +1,6 @@
 package com.cefisi.frank.business.dao;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.EntityManager;
@@ -151,5 +152,37 @@ public class EntityDao {
 	    em.clear();
 	    em.close();
 	}
+    }
+
+    /**
+     * Executes and returns a single result given specified query string.
+     * <p>
+     * This implementation does not handle parameters
+     *
+     * @param jpqlQueryString
+     *        a JPQL query string
+     * @return a single result
+     */
+    public final Object selectSingle(String jpqlQueryString) {
+	EntityManager em = startSimple();
+	Object result = em.createQuery(jpqlQueryString).getSingleResult();
+	end(em);
+	return result;
+    }
+
+    /**
+     * Executes and returns a single result given specified query string.
+     * <p>
+     * This implementation does not handle parameters
+     *
+     * @param jpqlQueryString
+     *        a JPQL query string
+     * @return a single result
+     */
+    public final List<?> selectMultiple(String jpqlQueryString) {
+	EntityManager em = startSimple();
+	List<?> result = em.createQuery(jpqlQueryString).getResultList();
+	end(em);
+	return result;
     }
 }
