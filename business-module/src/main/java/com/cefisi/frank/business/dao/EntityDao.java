@@ -1,11 +1,8 @@
 package com.cefisi.frank.business.dao;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
+import javax.persistence.*;
 
 /**
  * A base Data Access Object class to deal with common <b>atomic</b> operations
@@ -48,6 +45,19 @@ public class EntityDao {
      */
     public final EntityManagerFactory getFactory() {
 	return factory;
+    }
+
+    /**
+     * Returns the value of the {@code hibernate.jdbc.batch_size} property.
+     *
+     * @return the JDBC batch size configured value
+     * @throws NumberFormatException
+     *         if batch size property is not set
+     */
+    public final int getBatchSize() {
+	String batchSizeStr = (String) factory.getProperties()
+		.get("hibernate.jdbc.batch_size");
+	return Integer.valueOf(batchSizeStr);
     }
 
     /**

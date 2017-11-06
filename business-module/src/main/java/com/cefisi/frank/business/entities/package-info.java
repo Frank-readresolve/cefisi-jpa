@@ -11,6 +11,7 @@
  * Regarding class invariants, please note that otherwise stated accessors never
  * return {@code null} and always return a consistent state. Also, implemented
  * builders guarantee the class invariants as entity's mutators do. Builders
- * build entity with a {@code null} identifier.
+ * build entity with a {@code null} identifier. That said, a {@code null}
+ * identifier indicates a non-persisted entity. Each entity provides a convenient {@code isPersisted()} method.
  */
 package com.cefisi.frank.business.entities;

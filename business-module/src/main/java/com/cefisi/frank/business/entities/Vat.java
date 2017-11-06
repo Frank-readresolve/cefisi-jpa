@@ -1,14 +1,12 @@
 package com.cefisi.frank.business.entities;
 
+import static com.cefisi.frank.business.QueryNames.VAT_ONE_BY_RATE;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 /**
  * Represents a Value Added Tax (VAT) in time.
@@ -21,6 +19,9 @@ import javax.persistence.Transient;
  * </ul>
  */
 @Entity
+@Table(name = "t_vat")
+@NamedQueries({
+	@NamedQuery(name = VAT_ONE_BY_RATE, query = "select v from Vat v where v.rate = :rate") })
 public class Vat {
 
     @Id
@@ -40,19 +41,31 @@ public class Vat {
 	// Empty protected no-arg constructor for JPA
     }
 
-    private Vat(BigDecimal rate, LocalDate start) {
+    private Vat(Builder builder) {
 	// Builder's private constructor
-	this.rate = rate;
-	this.start = start;
+	id = builder.id;
+	rate = builder.rate;
+	start = builder.start;
     }
 
     /**
      * Returns the identifier for this {@code vat}.
      *
-     * @return the identifier
+     * @return the identifier; {@code null} if not persisted
      */
     public Integer getId() {
 	return id;
+    }
+
+    /**
+     * Indicates whether or not this {@code vat} is persisted.
+     * <p>
+     * A {@code null} identifier indicates a non-persisted object.
+     *
+     * @return {@code true} if persisted; {@code false} otherwise
+     */
+    public final boolean isPersisted() {
+	return null != id;
     }
 
     /**
@@ -82,24 +95,6 @@ public class Vat {
      */
     public LocalDate getEnd() {
 	return end;
-    }
-
-    /**
-     * Assigns given end date to this {@code vat}.
-     *
-     * @param date
-     *        an end date
-     * @throws NullPointerException
-     *         if {@code date} is {@code null}
-     * @throws IllegalArgumentException
-     *         if {@code date} is not after {@linkplain #getStart() start date}
-     */
-    public void setEnd(LocalDate date) {
-	if (!date.isAfter(start)) {
-	    throw new IllegalArgumentException("date [" + date
-		    + "] is not after start date [" + start + "]");
-	}
-	end = date;
     }
 
     /**
@@ -140,10 +135,7 @@ public class Vat {
     public int hashCode() {
 	int hash = hashcode;
 	if (0 == hash) {
-	    hash = 17;
-	    hash += 31 * hash + rate.hashCode();
-	    hash += 31 * hash + start.hashCode();
-	    hashcode = hash;
+	    hashcode = Objects.hash(rate, start);
 	}
 	return hash;
     }
@@ -170,17 +162,46 @@ public class Vat {
     /**
      * A builder to construct {@code Vat} objects.
      */
-    public final static class VatBuilder {
+    public final static class Builder {
+
+	private Integer id;
 
 	private BigDecimal rate;
 
 	private LocalDate start;
 
+	private LocalDate end;
+
 	/**
-	 * Creates a new {@code VatBuilder}.
+	 * Creates a new {@code Builder}.
 	 */
-	public VatBuilder() {
+	public Builder() {
 	    // Empty constructor
+	}
+
+	/**
+	 * Creates a new {@code Builder} in order to build a new {@code Vat} for
+	 * update.
+	 *
+	 * @param original
+	 *        an original {@code Vat} persisted instance
+	 * @return a new {@code Builder} populated with given original
+	 *         {@code Vat} instance
+	 * @throws IllegalStateException
+	 *         if {@code original} is not persisted
+	 */
+	public static Builder forUpdate(Vat original) {
+	    Integer id = original.id;
+	    if (null == id) {
+		throw new IllegalStateException(
+			"given original is not persisted");
+	    }
+	    Builder builder = new Builder();
+	    builder.id = id;
+	    builder.rate = original.rate;
+	    builder.start = original.start;
+	    builder.end = original.end;
+	    return builder;
 	}
 
 	/**
@@ -190,7 +211,7 @@ public class Vat {
 	 *        a rate
 	 * @return this {@code builder} for chaining
 	 */
-	public VatBuilder setRate(BigDecimal rate) {
+	public Builder setRate(BigDecimal rate) {
 	    this.rate = rate;
 	    return this;
 	}
@@ -201,26 +222,48 @@ public class Vat {
 	 * @param date
 	 *        a start date
 	 * @return this {@code builder} for chaining
+	 * @see #setEnd(LocalDate)
 	 */
-	public VatBuilder setStart(LocalDate date) {
+	public Builder setStart(LocalDate date) {
 	    start = date;
 	    return this;
 	}
 
 	/**
-	 * Builds a new {@code Vat} object with given rate and start date.
+	 * Assigns given end date to this {@code builder}.
+	 *
+	 * @param date
+	 *        an end date
+	 * @return this {@code builder} for chaining
+	 * @see #setStart(LocalDate)
+	 */
+	public Builder setEnd(LocalDate date) {
+	    end = date;
+	    return this;
+	}
+
+	/**
+	 * Builds a new {@code Vat} object with provided rate and start date.
 	 * <p>
-	 * This implementation ensures class invariants. Returned {@code Vat}
-	 * instance has a {@code null} end date.
+	 * This implementation ensures class invariants.
 	 *
 	 * @return a new {@code Vat} object
 	 * @throws NullPointerException
-	 *         if any of the argument is {@code null}
+	 *         if either rate of start date is {@code null}
+	 * @throws IllegalArgumentException
+	 *         if the end date is not {@code null} and is not after provided
+	 *         start date
 	 */
 	public Vat build() {
 	    Objects.requireNonNull(rate);
 	    Objects.requireNonNull(start);
-	    return new Vat(rate, start);
+	    if (null != end) {
+		if (!end.isAfter(start)) {
+		    throw new IllegalArgumentException("end date [" + end
+			    + "] is not after start date [" + start + "]");
+		}
+	    }
+	    return new Vat(this);
 	}
     }
 }

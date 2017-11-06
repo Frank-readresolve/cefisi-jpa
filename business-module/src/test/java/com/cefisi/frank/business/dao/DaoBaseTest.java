@@ -25,6 +25,7 @@ public class DaoBaseTest {
      */
     @BeforeClass
     public static void init() throws FileNotFoundException, SQLException {
+	
 	EMF = Persistence.createEntityManagerFactory("CefisiServices");
     }
 
@@ -42,6 +43,7 @@ public class DaoBaseTest {
      */
     @AfterClass
     public static void tearDown() {
+
 	EMF.close();
     }
 }
