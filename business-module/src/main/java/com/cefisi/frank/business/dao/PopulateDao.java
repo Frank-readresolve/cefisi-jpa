@@ -1,23 +1,13 @@
 package com.cefisi.frank.business.dao;
 
-import static com.cefisi.frank.business.QueryNames.ADDRESS_ONE_BY_NAME;
-import static com.cefisi.frank.business.QueryNames.ARTICLE_ONE_BY_CODE;
-import static com.cefisi.frank.business.QueryNames.CONTACT_ONE_BY_LASTNAME;
-import static com.cefisi.frank.business.QueryNames.VAT_ONE_BY_RATE;
+import static com.cefisi.frank.business.QueryNames.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
+import javax.persistence.*;
 
-import com.cefisi.frank.business.entities.Address;
-import com.cefisi.frank.business.entities.Article;
-import com.cefisi.frank.business.entities.Contact;
-import com.cefisi.frank.business.entities.Order;
-import com.cefisi.frank.business.entities.Vat;
+import com.cefisi.frank.business.entities.*;
 
 /**
  * A Data Access Object class to populate data.
@@ -103,6 +93,7 @@ public final class PopulateDao extends EntityDao {
      */
     public Long populateArticles(int num) {
 	EntityManager em = start();
+	Cache cache = getFactory().getCache();
 	Article article;
 	Article.Builder builder;
 	long start = System.currentTimeMillis();
@@ -126,6 +117,12 @@ public final class PopulateDao extends EntityDao {
 	    builder.setVat(vat);
 	    article = builder.build();
 	    em.persist(article);
+	    //
+	    Integer id = vat.getId();
+	    boolean contains = cache.contains(Vat.class, id);
+	    System.out
+		    .println("##### Cache contains Vat#" + id + "=" + contains);
+	    //
 	}
 	end(em);
 	long end = System.currentTimeMillis();
@@ -144,10 +141,13 @@ public final class PopulateDao extends EntityDao {
 	Order order;
 	Order.Builder builder;
 	int cmdNum = 1;
-	Long maxContacts = (Long) em.createQuery("select count(c) from Contact c")
+	Long maxContacts = (Long) em
+		.createQuery("select count(c) from Contact c")
 		.getSingleResult();
-	Long maxArticles = (Long) em.createQuery("select count(a) from Article a")
+	Long maxArticles = (Long) em
+		.createQuery("select count(a) from Article a")
 		.getSingleResult();
+	int batchSize = getBatchSize();
 	long start = System.currentTimeMillis();
 	for (int i = 0; i < maxContacts.intValue(); i++) {
 	    String lastname = "LASTNAME_" + i;
@@ -175,6 +175,11 @@ public final class PopulateDao extends EntityDao {
 		builder.setDeliveryDate(deliveryDate);
 		order = builder.build();
 		em.persist(order);
+	    }
+	    if (i % batchSize == 0) {
+		System.out.println("##### flushing and clearing... #####");
+		em.flush();
+		em.clear();
 	    }
 	    System.out.println("Counter=" + (i + 1) + "/" + maxContacts);
 	}

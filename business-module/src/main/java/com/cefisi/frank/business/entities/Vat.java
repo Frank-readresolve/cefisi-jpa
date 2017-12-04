@@ -20,8 +20,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "t_vat")
+@Cacheable
 @NamedQueries({
-	@NamedQuery(name = VAT_ONE_BY_RATE, query = "select v from Vat v where v.rate = :rate") })
+	@NamedQuery(name = VAT_ONE_BY_RATE, query = "select v from Vat v where v.rate = :rate", hints = {
+		@QueryHint(name = "org.hibernate.cacheable", value = "true") }) })
 public class Vat {
 
     @Id

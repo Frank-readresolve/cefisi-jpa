@@ -13,9 +13,9 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 	<modules>
-		<module>utils-module</module>
-		<module>web-module</module>
-		<module>business-module</module>
+		<module>../utils-module</module>
+		<module>../web-module</module>
+		<module>../business-module</module>
 	</modules>
 	<dependencies>
 		<dependency>

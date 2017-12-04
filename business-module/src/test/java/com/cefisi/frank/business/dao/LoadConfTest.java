@@ -16,7 +16,7 @@ public class LoadConfTest extends DaoBaseTest {
      * To load configuration.
      */
     @Test
-    public void shouldPersist() {
+    public void shouldLoadCOnf() {
 	assertNotNull("load conf");
     }
 }
