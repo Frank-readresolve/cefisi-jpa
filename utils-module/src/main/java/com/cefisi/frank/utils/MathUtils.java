@@ -23,7 +23,7 @@ public final class MathUtils {
     public static boolean isPositive(BigDecimal value) {
 	return 0 < value.compareTo(BigDecimal.ZERO);
     }
-    
+
     /**
      * Indicates whether or not given {@code BigDecimal} is negative.
      *
@@ -35,5 +35,18 @@ public final class MathUtils {
      */
     public static boolean isNegative(BigDecimal value) {
 	return 0 > value.compareTo(BigDecimal.ZERO);
+    }
+
+    /**
+     * Indicates whether or not given {@code BigDecimal} is equal to zero.
+     *
+     * @param value
+     *        a {@code BigDecimal} value to tests zero-equality against
+     * @return {@code true} if equal to zero; {@code false} otherwise
+     * @throws NullPointerException
+     *         if {@code value} is {@code null}
+     */
+    public static boolean isZero(BigDecimal value) {
+	return 0 == value.compareTo(BigDecimal.ZERO);
     }
 }
