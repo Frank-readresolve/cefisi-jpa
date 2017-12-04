@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 /**
  * An utility math class.
+ * <p>
+ * Provides methods to deal with {@code BigDecimal}s.
  */
 public final class MathUtils {
 
